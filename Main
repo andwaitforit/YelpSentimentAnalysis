@@ -1,0 +1,119 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 21 11:23:01 2019
+
+@author: ahorgan
+"""
+
+import json
+import pprint as p
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+
+def main():
+    try:
+        with open("yelp_academic_dataset_review_small.json", 'r') as file:
+            jsonData = json.load(file)
+            
+            #p.pprint(jsonData[0:12])
+            
+            
+            #Creating a sample of the json file to work with before processing it's entirety
+            text = jsonData[0]['text']
+            stars = jsonData[0]['stars']
+            
+            words = [words for words in nltk.pos_tag(nltk.word_tokenize(text)) if not words in set(stopwords.words('english'))]
+            
+            lmtzr = WordNetLemmatizer()
+            
+            
+            #ToDo pass POS into lemmatize function
+            lemmas = [lmtzr.lemmatize(word[0]) for word in words]
+            
+            #lemmas = [lemmas for lemmas in lmtzr.lemmatize(words, pos2pos(pos[0])).lower() for w,pos in nltk.pos_tag(words)]
+            
+            
+            
+            
+            
+            """To Do:
+            1: Write POS translation function to deal work with lemmatizer
+            2: Create freq analysis with star rating attached to each lemma occurence
+            3: Create CSV file to save top 500 most neg/pos lemmas sorted by descending levels of sentiment
+            
+            Psuedo Code for creating lemma dictionary
+            dict = {}
+            
+            for text in Jsondata:
+                for lemma in text:
+                    if not dict[lemma]:
+                        dict[lemma] = Jsondata[stars]
+                    else:
+                        dict[lemma]  dict[lemma] + Jsondata[stars]/2
+            
+            
+            
+            """
+            print(lemmas)
+            print(stars)
+            
+            
+            
+            
+    except Exception as e:
+        print(e)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+def pos2pos(tag):
+    
+    posTrans = {"J" : "a", "V" : "v", "N" : "n", "R" : "r"}
+    
+    if tag in posTrans: return posTrans[tag] 
+    else: return "n"
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+main()
