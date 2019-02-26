@@ -6,7 +6,8 @@ Created on Thu Feb 21 11:23:01 2019
 """
 
 import json
-import pprint as p
+#import pprint as p
+import csv
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -18,49 +19,47 @@ def main():
             
             #p.pprint(jsonData[0:12])
             
+            lemmaDict = {}
             
-            #Creating a sample of the json file to work with before processing it's entirety
-            text = jsonData[0]['text']
-            stars = jsonData[0]['stars']
-            
-            words = [words for words in nltk.pos_tag(nltk.word_tokenize(text)) if not words in set(stopwords.words('english'))]
-            
-            lmtzr = WordNetLemmatizer()
-            
-            
-            #ToDo pass POS into lemmatize function
-            lemmas = [lmtzr.lemmatize(word[0]) for word in words]
-            
-            #lemmas = [lemmas for lemmas in lmtzr.lemmatize(words, pos2pos(pos[0])).lower() for w,pos in nltk.pos_tag(words)]
-            
-            
-            
-            
-            
-            """To Do:
-            1: Write POS translation function to deal work with lemmatizer
-            2: Create freq analysis with star rating attached to each lemma occurence
-            3: Create CSV file to save top 500 most neg/pos lemmas sorted by descending levels of sentiment
-            
-            Psuedo Code for creating lemma dictionary
-            dict = {}
-            
-            for text in Jsondata:
-                for lemma in text:
-                    if not dict[lemma]:
-                        dict[lemma] = Jsondata[stars]
+            for cell in jsonData:
+                print(cell)
+                text = cell['text']
+                stars = cell['stars']    
+                    
+                
+                words = [words for words in nltk.pos_tag(nltk.word_tokenize(text)) if not words in set(stopwords.words('english'))]
+                
+                lmtzr = WordNetLemmatizer()
+                
+                
+                #ToDo pass POS into lemmatize function
+                lemmas = [lmtzr.lemmatize(word[0]) for word in words]
+
+                #lemmas = [lemmas for lemmas in lmtzr.lemmatize(words, pos2pos(pos[0])).lower() for w,pos in nltk.pos_tag(words)]
+                print(lemmas)
+                for  lemma in lemmas:
+                    if lemma in lemmaDict:
+                        lemmaDict[lemma] = (lemmaDict[lemma] + stars) / 2
                     else:
-                        dict[lemma]  dict[lemma] + Jsondata[stars]/2
+                        lemmaDict[lemma] =  stars
+                
+                #print(lemmaDict)
             
             
-            
-            """
-            print(lemmas)
-            print(stars)
-            
+            #print(lemmas)
+            #print(stars)
+            #print(lemmaDict)
             
             
-            
+            with open("sentimentAnalysis.csv", "w+") as csvFile:
+                newLine = csv.writer(csvFile, delimiter=',')
+                #ordered = dict(sorted(lemmaDict.items, key=lambda x: x[0], reverse=True))
+                for key, value in lemmaDict.items():
+                    newLine.writerow([key, value])
+                    
+                
+                
+                
     except Exception as e:
         print(e)
     
@@ -72,19 +71,7 @@ def main():
     
     
     
-    
-    
-    
-def pos2pos(tag):
-    
-    posTrans = {"J" : "a", "V" : "v", "N" : "n", "R" : "r"}
-    
-    if tag in posTrans: return posTrans[tag] 
-    else: return "n"
-    
-    
-    
-    
+ 
     
     
     
